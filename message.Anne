@@ -1,0 +1,2 @@
+#!/bin/bash
+./describebattles state.Anne.known state.Anne.now | grep -v Landed

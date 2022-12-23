@@ -1,0 +1,18 @@
+#!/bin/bash
+USER=${1-Anne}
+./attackingme $(cat $USER.gameid) $(cat $USER.apikey)> state.$USER.now
+if cmp state.$USER.known state.$USER.now
+then
+	echo $(date) ": No state change."
+else
+	echo $(date) ": State change. Notify."
+	./message.$USER > message.$USER.body
+	if test -s message.$USER.body
+	then
+		echo "Send message.$USER.body"
+		cat message.$USER.body | ./pushover $(cat $USER)
+	else
+		echo "No message."
+	fi
+	cp state.$USER.now state.$USER.known
+fi

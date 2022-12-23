@@ -1,0 +1,39 @@
+#!/usr/local/bin/python3
+
+import requests
+import json
+import math
+import datetime
+import sys
+
+hour = datetime.datetime.now().hour
+wday = datetime.datetime.now().weekday()
+
+game_id = sys.argv[1]
+api_key = sys.argv[2]
+root = "https://np.ironhelmet.com/api"
+params = {"game_number" : game_id, "code" : api_key, "api_version" : "0.1"}
+
+payload = requests.post(root, params).json()
+days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+stars = payload["scanning_data"]["stars"]
+fleets = payload["scanning_data"]["fleets"]
+tick_rate = payload["scanning_data"]["tick_rate"]
+
+parked = {};
+
+arrivals = [];
+
+for fleet in fleets:
+  f = fleets[fleet];
+  if "o" in f and len(f["o"]) > 0:
+      stop = str(f["o"][0][1])
+      ticks = 1;
+      me = payload["scanning_data"]['player_uid']
+      if f["puid"] != me and stop in stars and stars[stop]['puid'] == me:
+        arrivals.append([ticks, ("[[{5}]] [[{0}]] {6} → [[{1}]]".format(f['n'], stars[stop]['n'], 'x', 'y', 'z', f["puid"], f["st"]))]);
+
+arrivals.sort();
+for a in arrivals:
+    print(a[1]);

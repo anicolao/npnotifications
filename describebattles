@@ -1,0 +1,2 @@
+#!/bin/bash
+diff $1 $2 | grep '^[<>]' | sed -re 's/^</Landed:/' -e 's/^>/NEW:/' | sort
